@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <!-- Metadata untuk SEO dan Fungsionalitas -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Converter Vless/Vmess/Trojan ke Format OpenClash</title>
+    <meta name="description" content="Alat konverter online gratis untuk mengubah link URI Vmess, Vless, dan Trojan menjadi format konfigurasi YAML yang siap digunakan untuk OpenClash. Mudah, cepat, dan akurat.">
+    <meta name="keywords" content="converter vmess, format openclash, converter vless, yaml openclash, trojan to yaml, v2ray converter, config generator, andrian, 4ndxin, vpn, proxy config">
+    <meta name="author" content="Andrian">
+    
+    <!-- Eksternal Resource -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Styling Kustom -->
+    <style>
+        html.dark {
+            /* Tema Gelap (Normal) */
+            --bg-primary: #111827; /* gray-900 */
+            --bg-secondary: #1f2937; /* gray-800 */
+            --bg-card: #374151; /* gray-700 */
+            --text-primary: #f3f4f6; /* gray-100 */
+            --text-secondary: #9ca3af; /* gray-400 */
+            --text-accent: #60a5fa; /* blue-400 */
+            --border-color: #374151; /* gray-700 */
+            --button-bg: #2563eb; /* blue-600 */
+            --button-hover: #1d4ed8; /* blue-700 */
+        }
+        html:not(.dark) {
+            /* Tema Pink (Terang) */
+            --bg-primary: #881337; /* rose-900 */
+            --bg-secondary: rgba(136, 19, 55, 0.5); /* rose-800/50 */
+            --bg-card: rgba(159, 18, 57, 0.4); /* rose-900/40 */
+            --text-primary: #fecdd3; /* rose-100 */
+            --text-secondary: #fda4af; /* rose-300 */
+            --text-accent: #fb7185; /* rose-400 */
+            --border-color: #be123c; /* rose-700 */
+            --button-bg: #db2777; /* pink-600 */
+            --button-hover: #be185d; /* pink-700 */
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: var(--bg-primary); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--button-bg); border-radius: 3px; }
+        .result-card, .main-panel { transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.3s; }
+        .result-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2), 0 4px 6px -2px rgba(0,0,0,0.15); }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto max-w-5xl py-8 sm:py-12 px-4">
+        <!-- Header -->
+        <header class="text-center mb-10 relative">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white">💖 Converter Vless/Vmess/Trojan 💖</h1>
+            <p class="text-base sm:text-lg mt-3 max-w-2xl mx-auto" style="color: var(--text-secondary);">Ubah link URI menjadi format YAML OpenClash secara instan.</p>
+            <!-- Tombol Mode Terang/Gelap -->
+            <button id="theme-toggle" class="absolute top-0 right-0 p-2 rounded-full" style="background-color: var(--bg-card); border: 1px solid var(--border-color);" title="Ganti Tema">
+                <svg id="theme-toggle-dark-icon" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                <svg id="theme-toggle-light-icon" class="hidden w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 7.072l.707-.707a1 1 0 10-1.414-1.414l-.707.707a1 1 0 101.414 1.414zM3 11a1 1 0 100-2H2a1 1 0 100 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+            </button>
+        </header>
+
+        <!-- Area Input -->
+        <main class="main-panel p-4 sm:p-6 md:p-8 rounded-2xl shadow-2xl backdrop-blur-md" style="background-color: var(--bg-secondary); border: 1px solid var(--border-color);">
+            <div class="flex flex-col space-y-4">
+                <label for="uri-input" class="text-lg font-semibold" style="color: var(--text-primary);">Link URI Input (Satu Link)</label>
+                <textarea id="uri-input" rows="5"
+                    class="w-full p-4 border-2 rounded-lg transition-all duration-300 resize-y custom-scrollbar"
+                    style="background-color: var(--bg-primary); border-color: var(--border-color); color: var(--text-primary);"
+                    placeholder="Tempel satu link vmess, vless, atau trojan..."></textarea>
+                <button id="convert-btn"
+                    class="w-full text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105"
+                    style="background-color: var(--button-bg); --tw-ring-offset-color: var(--bg-secondary);">
+                    Convert
+                </button>
+            </div>
+
+            <!-- Box Keterangan & Hitung Mundur -->
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6">
+                 <!-- Kotak Info -->
+                <div class="lg:col-span-3 bg-black/20 p-4 rounded-lg border" style="border-color: var(--border-color);">
+                     <h3 class="text-lg font-semibold text-white mb-3">Keterangan</h3>
+                     <dl class="space-y-2 text-sm">
+                        <div><dt class="font-bold" style="color: var(--text-accent);">CDN</dt><dd class="text-xs" style="color: var(--text-secondary);">Mode Bolak Balik</dd></div>
+                        <div><dt class="font-bold" style="color: var(--text-accent);">SNI</dt><dd class="text-xs" style="color: var(--text-secondary);">Mode non-bolak balik/SSL</dd></div>
+                        <div><dt class="font-bold" style="color: var(--text-accent);">BUGSNI.COM</dt><dd class="text-xs" style="color: var(--text-secondary);">Bug untuk metode SNI/SSL</dd></div>
+                        <div><dt class="font-bold" style="color: var(--text-accent);">BUGCDN.COM</dt><dd class="text-xs" style="color: var(--text-secondary);">Bug Websocket (Host)</dd></div>
+                        <div><dt class="font-bold" style="color: var(--text-accent);">IPCDN.COM</dt><dd class="text-xs" style="color: var(--text-secondary);">Bug Websocket (IP)</dd></div>
+                     </dl>
+                </div>
+                 <!-- Kotak Hitung Mundur Ulang Tahun -->
+                <div id="countdown-box" class="lg:col-span-2 bg-black/20 p-4 rounded-lg border flex flex-col items-center justify-center text-center" style="border-color: var(--border-color);">
+                    <h3 class="text-lg font-semibold text-white mb-3">Menuju 16 Desember</h3>
+                    <div id="timer" class="flex space-x-3">
+                        <div><span id="days" class="text-3xl font-bold" style="color: var(--text-accent);">00</span><div class="text-xs" style="color: var(--text-secondary);">Hari</div></div>
+                        <div><span id="hours" class="text-3xl font-bold" style="color: var(--text-accent);">00</span><div class="text-xs" style="color: var(--text-secondary);">Jam</div></div>
+                        <div><span id="minutes" class="text-3xl font-bold" style="color: var(--text-accent);">00</span><div class="text-xs" style="color: var(--text-secondary);">Menit</div></div>
+                        <div><span id="seconds" class="text-3xl font-bold" style="color: var(--text-accent);">00</span><div class="text-xs" style="color: var(--text-secondary);">Detik</div></div>
+                    </div>
+                    <div id="birthday-message" class="hidden text-center">
+                        <p class="text-xl font-bold text-white"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="error-box" class="hidden bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-lg mt-6" role="alert"></div>
+
+            <!-- Area Hasil Output -->
+            <div id="results-container" class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Kartu hasil akan ditampilkan di sini -->
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="text-center mt-12" style="color: var(--text-secondary);">
+            <p>&copy; 2024 - <span id="current-year"></span></p>
+            <a href="https://www.facebook.com/4NDXIN" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors duration-200">
+                Dibuat dengan ❤️ oleh Andrian
+            </a>
+        </footer>
+    </div>
+
+<script>
+// --- Elemen DOM ---
+const uriInput = document.getElementById('uri-input');
+const convertBtn = document.getElementById('convert-btn');
+const resultsContainer = document.getElementById('results-container');
+const errorBox = document.getElementById('error-box');
+const yearSpan = document.getElementById('current-year');
+const themeToggleBtn = document.getElementById('theme-toggle');
+const darkIcon = document.getElementById('theme-toggle-dark-icon');
+const lightIcon = document.getElementById('theme-toggle-light-icon');
+const countdownTimerEl = document.getElementById('timer');
+const birthdayMessageEl = document.getElementById('birthday-message');
+
+// --- Inisialisasi Tema ---
+if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark');
+    lightIcon.classList.remove('hidden');
+    darkIcon.classList.add('hidden');
+} else {
+    document.documentElement.classList.remove('dark');
+    lightIcon.classList.add('hidden');
+    darkIcon.classList.remove('hidden');
+}
+yearSpan.textContent = new Date().getFullYear();
+
+// --- Event Listener Tema ---
+themeToggleBtn.addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
+    const isDarkMode = document.documentElement.classList.contains('dark');
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+    darkIcon.classList.toggle('hidden', isDarkMode);
+    lightIcon.classList.toggle('hidden', !isDarkMode);
+});
+
+// --- Logika Hitung Mundur Ulang Tahun ---
+const birthYear = 2008;
+const countdownInterval = setInterval(() => {
+    const now = new Date();
+    let currentYear = now.getFullYear();
+    let birthday = new Date(currentYear, 11, 16); // 11 adalah Desember (0-indexed)
+
+    if (now > birthday) {
+        birthday = new Date(currentYear + 1, 11, 16);
+    }
+    
+    // Cek apakah hari ini ulang tahun
+    if (now.getDate() === 16 && now.getMonth() === 11) {
+        const age = currentYear - birthYear;
+        countdownTimerEl.classList.add('hidden');
+        birthdayMessageEl.classList.remove('hidden');
+        birthdayMessageEl.querySelector('p').innerHTML = `Selamat Ulang Tahun ke-${age} ya sayang ❤️`;
+        clearInterval(countdownInterval); // Stop timer
+        return;
+    }
+
+    const totalSeconds = (birthday - now) / 1000;
+    const days = Math.floor(totalSeconds / 3600 / 24);
+    const hours = Math.floor(totalSeconds / 3600) % 24;
+    const minutes = Math.floor(totalSeconds / 60) % 60;
+    const seconds = Math.floor(totalSeconds) % 60;
+    
+    document.getElementById('days').textContent = String(days).padStart(2, '0');
+    document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+    document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+    document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+}, 1000);
+
+
+// --- Fungsi Helper ---
+const showError = (message) => {
+    errorBox.textContent = `Error: ${message}`;
+    errorBox.classList.remove('hidden');
+};
+const hideError = () => {
+    resultsContainer.innerHTML = '';
+    errorBox.classList.add('hidden');
+};
+function safeAtob(b64) {
+    let base64 = b64.replace(/-/g, '+').replace(/_/g, '/');
+    const padding = base64.length % 4;
+    if (padding) base64 += '===='.slice(padding);
+    try { return atob(base64); } catch (e) { throw new Error('Gagal mendekode info user Base64.'); }
+}
+
+// --- Fungsi Parsing ---
+function parseBaseConfig(link) {
+    let config = {};
+    if (link.startsWith('vmess://')) {
+        const jsonStr = atob(link.substring('vmess://'.length));
+        const c = JSON.parse(jsonStr);
+        return { protocol: 'vmess', name: c.ps, server: c.add, port: c.port, uuid: c.id, alterId: c.aid, cipher: c.scy, path: c.path || '' };
+    }
+    const url = new URL(link);
+    const protocol = url.protocol.slice(0, -1);
+    config = { protocol, name: decodeURIComponent(url.hash.substring(1)) || url.hostname, server: url.hostname, port: url.port, path: url.searchParams.get('path') || '' };
+    if (protocol === 'vless') config.uuid = url.username;
+    else if (protocol === 'trojan') config.password = decodeURIComponent(url.username);
+    return config;
+}
+
+// --- Logika Pembuatan Template ---
+function generateAllTemplates(config) {
+    const { protocol, name, server, port, uuid, alterId, password, path } = config;
+    const serverVar = server;
+    const wsPath = path || '/PATH';
+    const allTemplates = {
+        trojan: [
+            { title: 'Trojan GFW (SNI)', yaml: `- name: "${name} Trojan GFW (SNI)"\n  type: trojan\n  server: ${serverVar}\n  port: 443\n  password: ${password}\n  udp: true\n  sni: BUGSNI.COM\n  skip-cert-verify: true` },
+            { title: 'Trojan WS (SNI)', yaml: `- name: "${name} Trojan WS (SNI)"\n  server: ${serverVar}\n  port: 443\n  type: trojan\n  password: ${password}\n  skip-cert-verify: true\n  sni: BUGSNI.COM\n  network: ws\n  ws-opts:\n    path: "${wsPath}"\n    headers:\n      Host: BUGSNI.COM\n  udp: true` },
+            { title: 'Trojan WS (CDN)', yaml: `- name: "${name} Trojan WS (CDN)"\n  server: IPCDN.COM\n  port: 443\n  type: trojan\n  password: ${password}\n  network: ws\n  sni: ${serverVar}\n  skip-cert-verify: true\n  udp: true\n  ws-opts:\n    path: "${wsPath}"\n    headers:\n      Host: ${serverVar}` },
+            { title: 'Trojan gRPC (SNI)', yaml: `- name: "${name} Trojan gRPC (SNI)"\n  type: trojan\n  server: ${serverVar}\n  port: 443\n  password: ${password}\n  udp: true\n  sni: BUGSNI.COM\n  skip-cert-verify: true\n  network: grpc\n  grpc-opts:\n    grpc-service-name: NAMAGRPC` }
+        ],
+        vmess: [
+            { title: 'Vmess WS (SNI)', yaml: `- name: "${name} Vmess WS (SNI)"\n  type: vmess\n  server: ${serverVar}\n  port: 443\n  uuid: ${uuid}\n  alterId: ${alterId || 0}\n  cipher: auto\n  udp: true\n  tls: true\n  skip-cert-verify: true\n  servername: BUGSNI.COM\n  network: ws\n  ws-opts:\n    path: "${wsPath}"\n    headers:\n      Host: BUGSNI.COM`},
+            { title: 'Vmess WS (CDN)', yaml: `- name: "${name} Vmess WS (CDN)"\n  type: vmess\n  server: IPCDN.COM\n  port: 443\n  uuid: ${uuid}\n  alterId: ${alterId || 0}\n  cipher: auto\n  udp: true\n  tls: true\n  skip-cert-verify: true\n  servername: ${serverVar}\n  network: ws\n  ws-opts:\n    path: "${wsPath}"\n    headers:\n      Host: ${serverVar}`},
+            { title: 'Vmess WS (CDN) Non-TLS', yaml: `- name: "${name} Vmess WS (CDN) Non-TLS"\n  type: vmess\n  server: IPCDN.COM\n  port: 80\n  uuid: ${uuid}\n  alterId: ${alterId || 0}\n  cipher: auto\n  udp: true\n  tls: false\n  skip-cert-verify: false\n  servername: ${serverVar}\n  network: ws\n  ws-opts:\n    path: "${wsPath}"\n    headers:\n      Host: ${serverVar}`},
+            { title: 'Vmess gRPC (SNI)', yaml: `- name: "${name} Vmess gRPC (SNI)"\n  server: ${serverVar}\n  port: 443\n  type: vmess\n  uuid: ${uuid}\n  alterId: ${alterId || 0}\n  cipher: auto\n  network: grpc\n  tls: true\n  servername: BUGSNI.COM\n  skip-cert-verify: true\n  grpc-opts:\n    grpc-service-name: NAMAGRPC`}
+        ],
+        vless: [
+            { title: 'Vless WS (SNI)', yaml: `- name: "${name} Vless WS (SNI)"\n  server: ${serverVar}\n  port: 443\n  type: vless\n  uuid: ${uuid}\n  cipher: auto\n  tls: true\n  skip-cert-verify: true\n  servername: BUGSNI.COM\n  network: ws\n  ws-opts:\n    path: "${wsPath}"\n    headers:\n      Host: BUGSNI.COM`},
+            { title: 'Vless WS (CDN)', yaml: `- name: "${name} Vless WS (CDN)"\n  server: IPCDN.COM\n  port: 443\n  type: vless\n  uuid: ${uuid}\n  cipher: auto\n  tls: true\n  skip-cert-verify: true\n  servername: ${serverVar}\n  network: ws\n  ws-opts:\n    path: "${wsPath}"\n    headers:\n      Host: ${serverVar}`},
+            { title: 'Vless XTLS (SNI)', yaml: `- name: "${name} Vless XTLS (SNI)"\n  server: ${serverVar}\n  port: 443\n  type: vless\n  uuid: ${uuid}\n  tls: true\n  flow: xtls-rprx-direct\n  skip-cert-verify: true\n  servername: BUGSNI.COM`},
+            { title: 'Vless gRPC (SNI)', yaml: `- name: "${name} Vless gRPC (SNI)"\n  server: ${serverVar}\n  port: 443\n  type: vless\n  uuid: ${uuid}\n  tls: true\n  skip-cert-verify: true\n  servername: BUGSNI.COM\n  network: grpc\n  grpc-opts:\n    grpc-mode: gun\n    grpc-service-name: NAMAGRPC\n  udp: true`}
+        ]
+    };
+    return allTemplates[protocol] || [];
+}
+
+// --- Fungsi untuk membuat kartu hasil ---
+function createResultCard({ title, yaml }) {
+    const card = document.createElement('div');
+    card.className = 'p-4 rounded-lg shadow-lg relative result-card border';
+    card.style.backgroundColor = 'var(--bg-card)';
+    card.style.borderColor = 'var(--border-color)';
+    const titleEl = document.createElement('h3');
+    titleEl.className = 'text-md font-bold text-white mb-3';
+    titleEl.textContent = title;
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'absolute top-3 right-3 p-2 rounded-lg hover:text-white transition-all';
+    copyBtn.style.backgroundColor = 'var(--bg-primary)';
+    copyBtn.style.color = 'var(--text-secondary)';
+    copyBtn.title = 'Salin';
+    copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>`;
+    copyBtn.onclick = () => {
+        const textArea = document.createElement('textarea');
+        textArea.value = yaml;
+        textArea.style.position = 'fixed'; textArea.style.left = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.focus(); textArea.select();
+        try {
+            document.execCommand('copy');
+            copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>`;
+            setTimeout(() => {
+                copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"></path><path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"></path></svg>`;
+            }, 2000);
+        } catch (err) { showError('Gagal menyalin ke clipboard.'); }
+        document.body.removeChild(textArea);
+    };
+    const preEl = document.createElement('pre');
+    preEl.className = 'text-sm language-yaml p-3 rounded-md overflow-x-auto custom-scrollbar';
+    preEl.style.backgroundColor = 'var(--bg-primary)';
+    preEl.style.color = 'var(--text-accent)';
+    preEl.textContent = yaml;
+    card.appendChild(titleEl);
+    card.appendChild(copyBtn);
+    card.appendChild(preEl);
+    return card;
+}
+
+// --- Event Handler Utama ---
+convertBtn.addEventListener('click', () => {
+    hideError();
+    const link = uriInput.value.trim();
+    if (!link) { showError('Input kosong. Silakan tempel satu link URI.'); return; }
+    try {
+        const baseConfig = parseBaseConfig(link);
+        const templates = generateAllTemplates(baseConfig);
+        if (templates.length === 0) { showError(`Protokol "${baseConfig.protocol}" tidak didukung.`); return; }
+        templates.forEach(template => {
+            const card = createResultCard(template);
+            resultsContainer.appendChild(card);
+        });
+    } catch (e) { showError(e.message); }
+});
+</script>
+</body>
+</html>
