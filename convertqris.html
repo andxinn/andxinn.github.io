@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRIS Statis ke Dinamis Converter</title>
+    <meta name="description" content="Alat online untuk mengubah QRIS statis menjadi QRIS dinamis dengan menambahkan nominal dan biaya layanan secara otomatis.">
+    <meta name="keywords" content="qris, qris dinamis, qris statis, converter qris, generator qris, andrian, 4ndxin">
+    <meta name="author" content="Andrian">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jsQR Library untuk membaca QR Code -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Mode Terang (Default) */
+            --bg: #f9fafb;
+            --bg-card: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --accent: #16a34a; /* green-600 */
+            --border: #e5e7eb;
+        }
+        html.dark {
+            /* Mode Gelap */
+            --bg: #111111;
+            --bg-card: #18181B;
+            --text-primary: #f4f4f5;
+            --text-secondary: #a1a1aa;
+            --accent: #22c55e; /* green-500 */
+            --border: #27272A;
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg);
+            color: var(--text-primary);
+        }
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: var(--bg); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="container mx-auto max-w-2xl py-12 px-4">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold" style="color: var(--text-primary);">QRIS Statis ke Dinamis</h1>
+            <p class="text-base sm:text-lg mt-3" style="color: var(--text-secondary);">Upload gambar QR Code untuk diubah menjadi dinamis.</p>
+        </header>
+
+        <main class="p-6 md:p-8 rounded-2xl shadow-xl" style="background-color: var(--bg-card); border: 1px solid var(--border);">
+            <div class="space-y-6">
+                <!-- Upload Section -->
+                <div>
+                    <label for="qris-upload" class="w-full text-center block cursor-pointer p-6 border-2 border-dashed rounded-lg" style="border-color: var(--border);">
+                        <svg class="mx-auto h-12 w-12" style="color: var(--text-secondary);" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                        <span class="mt-2 block text-sm font-semibold" style="color: var(--accent);">Upload Gambar QRIS</span>
+                        <p class="text-xs" style="color: var(--text-secondary);">PNG, JPG, GIF hingga 10MB</p>
+                    </label>
+                    <input id="qris-upload" name="qris-upload" type="file" class="sr-only" accept="image/*">
+                    <img id="image-preview" class="hidden mt-4 rounded-lg max-h-48 mx-auto" />
+                </div>
+
+                <!-- QRIS Data String -->
+                <div>
+                    <label for="qris-data" class="block text-sm font-medium mb-2" style="color: var(--text-primary);">Data String QRIS</label>
+                    <textarea id="qris-data" rows="4" class="w-full p-3 border-2 rounded-lg custom-scrollbar" style="background-color: var(--bg); border-color: var(--border);" readonly></textarea>
+                </div>
+                
+                <!-- Analisis String (Hasil Parsing) -->
+                 <div id="analysis-box" class="hidden bg-black/10 dark:bg-black/20 p-4 rounded-lg border" style="border-color: var(--border);">
+                     <h3 class="text-lg font-semibold mb-3" style="color: var(--text-primary);">Analisis String</h3>
+                     <div id="analysis-content" class="text-xs space-y-1" style="color: var(--text-secondary);"></div>
+                </div>
+
+                <!-- Form untuk membuat QRIS Dinamis -->
+                <div class="space-y-4 pt-4 border-t" style="border-color: var(--border);">
+                    <div>
+                        <label for="nominal" class="block text-sm font-medium mb-2" style="color: var(--text-primary);">Nominal</label>
+                        <input type="number" id="nominal" placeholder="Contoh: 10000" class="w-full p-3 border-2 rounded-lg" style="background-color: var(--bg); border-color: var(--border);" disabled>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2" style="color: var(--text-primary);">Biaya Layanan (Fee)</label>
+                        <div class="flex items-center space-x-4">
+                            <label class="flex items-center"><input type="radio" name="fee-type" value="percent" class="mr-2" style="color: var(--accent);"> Persen (%)</label>
+                            <label class="flex items-center"><input type="radio" name="fee-type" value="rupiah" class="mr-2" style="color: var(--accent);"> Rupiah (Rp)</label>
+                        </div>
+                        <input type="number" id="fee-value" placeholder="Masukkan nilai fee" class="mt-2 w-full p-3 border-2 rounded-lg" style="background-color: var(--bg); border-color: var(--border);" disabled>
+                    </div>
+                </div>
+                
+                <button id="convert-dynamic" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-transform transform hover:scale-105" disabled>Generate QRIS Dinamis</button>
+
+                 <!-- Hasil QRIS Dinamis -->
+                 <div id="dynamic-qris-result" class="hidden text-center space-y-4">
+                     <h3 class="text-xl font-bold">QRIS Dinamis Anda Siap!</h3>
+                     <canvas id="qris-canvas" class="mx-auto border-4 rounded-lg" style="border-color: var(--accent);"></canvas>
+                     
+                     <!-- Kolom untuk menampilkan string QRIS yang sudah diubah -->
+                     <div class="text-center">
+                        <label for="converted-qris" class="block text-sm font-medium mb-2" style="color: var(--text-primary);">String QRIS yang Sudah Diubah</label>
+                        <textarea id="converted-qris" rows="4" class="w-full p-3 border-2 rounded-lg custom-scrollbar" style="background-color: var(--bg); border-color: var(--border);" readonly></textarea>
+                    </div>
+                     
+                     <a id="download-qris-link" class="inline-block bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700" download="qris_dinamis.png">Unduh QR Code</a>
+                 </div>
+            </div>
+        </main>
+        
+        <footer class="text-center mt-12" style="color: var(--text-secondary);">
+            <a href="index.html" class="hover:text-white transition-colors">&larr; Kembali ke Portofolio</a>
+        </footer>
+    </div>
+    
+    <!-- QR Code Generator Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const uploadInput = document.getElementById('qris-upload');
+            const previewImg = document.getElementById('image-preview');
+            const dataTextarea = document.getElementById('qris-data');
+            const analysisBox = document.getElementById('analysis-box');
+            const analysisContent = document.getElementById('analysis-content');
+            const nominalInput = document.getElementById('nominal');
+            const feeTypeRadios = document.querySelectorAll('input[name="fee-type"]');
+            const feeValueInput = document.getElementById('fee-value');
+            const convertBtn = document.getElementById('convert-dynamic');
+            const resultDiv = document.getElementById('dynamic-qris-result');
+            const qrCanvas = document.getElementById('qris-canvas');
+            const downloadLink = document.getElementById('download-qris-link');
+            const convertedQrisTextarea = document.getElementById('converted-qris');
+            
+            let qrisString = "";
+            let parsedQris = {};
+
+            // Event listener untuk upload gambar
+            uploadInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    previewImg.src = event.target.result;
+                    previewImg.classList.remove('hidden');
+                    decodeQrCode(event.target.result);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Fungsi untuk membaca QR code dari gambar
+            function decodeQrCode(imageDataUrl) {
+                const image = new Image();
+                image.src = imageDataUrl;
+                image.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.width = image.width;
+                    canvas.height = image.height;
+                    context.drawImage(image, 0, 0, image.width, image.height);
+                    const imageData = context.getImageData(0, 0, image.width, image.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                        inversionAttempts: "dontInvert",
+                    });
+
+                    if (code) {
+                        qrisString = code.data;
+                        dataTextarea.value = qrisString;
+                        parsedQris = parseQrisString(qrisString);
+                        displayAnalysis(parsedQris);
+                        enableForm(true);
+                    } else {
+                        dataTextarea.value = 'Error: Tidak dapat mendeteksi QR Code pada gambar.';
+                        analysisBox.classList.add('hidden');
+                        enableForm(false);
+                    }
+                };
+            }
+
+            // Fungsi untuk mem-parsing string QRIS
+            function parseQrisString(str) {
+                let data = {};
+                let i = 0;
+                while (i < str.length) {
+                    const id = str.substring(i, i + 2);
+                    const len = parseInt(str.substring(i + 2, i + 4), 10);
+                    const value = str.substring(i + 4, i + 4 + len);
+                    data[id] = value;
+                    i += 4 + len;
+                }
+                return data;
+            }
+
+            // Fungsi untuk menampilkan hasil analisis
+            function displayAnalysis(data) {
+                analysisContent.innerHTML = `
+                    <p><strong>Merchant Name:</strong> ${data['59'] || 'N/A'}</p>
+                    <p><strong>Merchant City:</strong> ${data['60'] || 'N/A'}</p>
+                    <p><strong>NMID:</strong> ${data['51']?.substring(8, 23) || 'N/A'}</p>
+                `;
+                analysisBox.classList.remove('hidden');
+            }
+            
+            // Mengaktifkan/menonaktifkan form
+            function enableForm(isEnabled) {
+                 nominalInput.disabled = !isEnabled;
+                 feeTypeRadios.forEach(radio => radio.disabled = !isEnabled);
+                 convertBtn.disabled = !isEnabled;
+                 if (!isEnabled) feeValueInput.disabled = true;
+            }
+            
+            feeTypeRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    feeValueInput.disabled = false;
+                    feeValueInput.placeholder = radio.value === 'percent' ? 'Contoh: 10 (untuk 10%)' : 'Contoh: 2000';
+                });
+            });
+
+            // Event listener untuk tombol convert
+            convertBtn.addEventListener('click', () => {
+                 let nominal = parseFloat(nominalInput.value) || 0;
+                 const feeType = document.querySelector('input[name="fee-type"]:checked')?.value;
+                 let feeValue = parseFloat(feeValueInput.value) || 0;
+                 
+                 if (nominal <= 0) {
+                     alert('Nominal harus lebih dari 0');
+                     return;
+                 }
+
+                 if (feeType) {
+                     if (feeValue < 0) feeValue = 0;
+                     if (feeType === 'percent') {
+                         nominal += nominal * (feeValue / 100);
+                     } else { // rupiah
+                         nominal += feeValue;
+                     }
+                 }
+                 
+                 // Bulatkan ke integer terdekat
+                 nominal = Math.round(nominal);
+
+                 // Buat string QRIS dinamis
+                 let newQrisString = qrisString;
+                 
+                 // Hapus tag nominal jika ada
+                 newQrisString = newQrisString.replace(/54\d{2,}\d+/g, '');
+                 
+                 // Tambahkan tag nominal baru (54) dan tag tipe transaksi (53)
+                 const nominalStr = String(nominal);
+                 const nominalTag = '54' + String(nominalStr.length).padStart(2, '0') + nominalStr;
+                 const currencyTag = '5303360'; // 360 = IDR, 03 = 3 digit desimal
+                 
+                 // Sisipkan sebelum tag CRC (63)
+                 const crcIndex = newQrisString.lastIndexOf('6304');
+                 if (crcIndex !== -1) {
+                     newQrisString = newQrisString.substring(0, crcIndex) + currencyTag + nominalTag + newQrisString.substring(crcIndex);
+                 } else {
+                     newQrisString += currencyTag + nominalTag; // Fallback
+                 }
+                 
+                 generateQrCode(newQrisString);
+            });
+            
+            // Fungsi untuk membuat QR Code
+            function generateQrCode(data) {
+                resultDiv.classList.remove('hidden');
+                new QRious({
+                    element: qrCanvas,
+                    value: data,
+                    size: 256,
+                    padding: 10,
+                    level: 'H'
+                });
+                downloadLink.href = qrCanvas.toDataURL('image/png');
+                convertedQrisTextarea.value = data; // Tampilkan string QRIS yang sudah diubah
+            }
+
+             // Inisialisasi Tema
+            const applyTheme = (isDark) => {
+                document.documentElement.classList.toggle('dark', isDark);
+            };
+            const savedTheme = localStorage.getItem('theme');
+            applyTheme(savedTheme ? savedTheme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+        });
+    </script>
+</body>
+</html>
